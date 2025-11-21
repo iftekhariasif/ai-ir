@@ -1,0 +1,1 @@
+Read the context.md file in the project root to understand the TNFD LEAP analysis project. This includes the background, goals, technology stack, current implementation status, and operation details. After reading, provide a brief confirmation that you understand the project context.
