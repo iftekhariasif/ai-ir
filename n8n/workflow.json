@@ -1,0 +1,426 @@
+{
+  "name": "final",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node: Convert Markdown Base64 to Binary\n// Place this BEFORE the \"Upload Markdown to Google Drive\" node\n\n// Get the base64 markdown data from HTTP Request response\nconst markdownBase64 = items[0].json.markdownData;\nconst markdownFileName = items[0].json.markdownFileName;\n\n// Get folder ID from the Create Output Folder node\nconst folderId = $('CREATE OUTPUT FOLDER').first().json.id;\n\n// Convert base64 to binary\nconst binaryData = Buffer.from(markdownBase64, 'base64');\n\n// Return in n8n binary format\nreturn [{\n  json: {\n    fileName: markdownFileName,\n    folderId: folderId,\n    success: items[0].json.success,\n    language: items[0].json.language\n  },\n  binary: {\n    data: {\n      data: binaryData.toString('base64'),\n      mimeType: 'text/markdown',\n      fileName: markdownFileName,\n      fileExtension: 'md'\n    }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        416
+      ],
+      "id": "eb5b26e2-3644-40f3-be43-0f8a78cdee19",
+      "name": "EXTRACT MARKDOWN"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node: Convert Image Base64 to Binary\n// Place this AFTER the \"Split Out\" node and BEFORE \"Upload Images to Google Drive\"\n\n// Get folder ID from the Create Output Folder node\nconst folderId = $('CREATE OUTPUT FOLDER').first().json.id;\n\n// Process ALL items, not just the first one\nconst results = [];\n\nfor (let i = 0; i < items.length; i++) {\n  const item = items[i];\n\n  // Get the base64 image data from the current item\n  const imageBase64 = item.json.data;\n  const imageFileName = item.json.fileName;\n\n  // Check if data exists\n  if (!imageBase64) {\n    throw new Error(`No image data found in item ${i}. Item structure: ${JSON.stringify(item.json)}`);\n  }\n\n  // Convert base64 to binary\n  const binaryData = Buffer.from(imageBase64, 'base64');\n\n  // Add to results\n  results.push({\n    json: {\n      fileName: imageFileName,\n      folderId: folderId\n    },\n    binary: {\n      data: {\n        data: binaryData.toString('base64'),\n        mimeType: 'image/png',\n        fileName: imageFileName,\n        fileExtension: 'png'\n      }\n    }\n  });\n}\n\n// Return ALL processed items\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        752
+      ],
+      "id": "af688d29-aa7e-4070-8bd5-e417e34a813f",
+      "name": "EXTRACT IMAGES"
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.folderId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "2f5ff5b8-a763-4f92-aeaf-f77c6437fea9",
+      "name": "UPLOAD MARKDOWN TO GDRIVE",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        416
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dRJVUZfzX0W3i6Wm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.folderId }}"
+        },
+        "options": {}
+      },
+      "id": "680c92f5-10dc-4217-9f5d-469575acc490",
+      "name": "UPLOAD IMAGES TO GDRIVE",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        16,
+        752
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dRJVUZfzX0W3i6Wm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/convert",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {},
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -880,
+        576
+      ],
+      "id": "b2705d59-0307-4642-b17c-304846e1207f",
+      "name": "PDF TO MARKDOWN API"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "id": "33585088-7ce7-43d7-b1fc-b9cbc6623206",
+      "name": "GET PDF FROM GDRIVE",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1440,
+        576
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dRJVUZfzX0W3i6Wm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "mimeType = 'application/pdf'",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('WORKFLOW CONFIG').first().json.inputFolderId }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "63ee3334-3b31-4ff8-83f0-a7d5e9524095",
+      "name": "LIST PDF FROM GDRIVE",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -896,
+        320
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dRJVUZfzX0W3i6Wm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "inputFolderId",
+              "value": "12jkoNxUr8fJr_hDKquaj73s0AX0AYTQS",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "outputFolderId",
+              "value": "1l9zQhCkO-NLUDQRlZbliysvc4uHXBJ-X",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "fb661a1d-ed18-4175-b3d0-a18b5d5cd3c6",
+      "name": "WORKFLOW CONFIG",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1184,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "PDF to Markdown Converter",
+        "formDescription": "Click the button below to convert PDF files from Google Drive to Markdown format",
+        "formFields": {
+          "values": []
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Convert PDF"
+        }
+      },
+      "id": "68a8e537-c504-476c-ad1d-00c1a95ad5ce",
+      "name": "START",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1488,
+        320
+      ],
+      "webhookId": "01905560-0029-47d9-9b98-e924072f44c4"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "images",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        752
+      ],
+      "id": "1e7141ff-0a2f-40e1-bbbb-e0e78ed39239",
+      "name": "IMAGE SPLITTER"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "pdfName",
+              "value": "={{ $json.name.replace('.pdf', '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "extract-pdf-name",
+      "name": "EXTRACT PDF NAME",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1264,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "name": "={{ $json.pdfName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('WORKFLOW CONFIG').first().json.outputFolderId }}"
+        },
+        "options": {}
+      },
+      "id": "create-output-folder",
+      "name": "CREATE OUTPUT FOLDER",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1072,
+        576
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dRJVUZfzX0W3i6Wm",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "EXTRACT MARKDOWN": {
+      "main": [
+        [
+          {
+            "node": "UPLOAD MARKDOWN TO GDRIVE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT IMAGES": {
+      "main": [
+        [
+          {
+            "node": "UPLOAD IMAGES TO GDRIVE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF TO MARKDOWN API": {
+      "main": [
+        [
+          {
+            "node": "EXTRACT MARKDOWN",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IMAGE SPLITTER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET PDF FROM GDRIVE": {
+      "main": [
+        [
+          {
+            "node": "EXTRACT PDF NAME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LIST PDF FROM GDRIVE": {
+      "main": [
+        [
+          {
+            "node": "GET PDF FROM GDRIVE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WORKFLOW CONFIG": {
+      "main": [
+        [
+          {
+            "node": "LIST PDF FROM GDRIVE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "START": {
+      "main": [
+        [
+          {
+            "node": "WORKFLOW CONFIG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IMAGE SPLITTER": {
+      "main": [
+        [
+          {
+            "node": "EXTRACT IMAGES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT PDF NAME": {
+      "main": [
+        [
+          {
+            "node": "CREATE OUTPUT FOLDER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CREATE OUTPUT FOLDER": {
+      "main": [
+        [
+          {
+            "node": "PDF TO MARKDOWN API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "updated-with-folder-structure",
+  "meta": {
+    "instanceId": "3066f24581dcaafc55dc99fec981ad03fe971eff4993124a9e230738a89ca0ae"
+  },
+  "id": "IiCCN41rIIoGQv4q",
+  "tags": []
+}

@@ -70,9 +70,9 @@ htmlcov/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# Output files (optional - uncomment if you don't want to track outputs)
-# output/
-# *.txt
+# Input/Output folders
+input/
+output/
 
 # Temporary files
 *.tmp
