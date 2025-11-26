@@ -29,19 +29,8 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 import io
 import pickle
 
-# Your existing imports
-from main import (
-    detect_language,
-    get_leap_keywords,
-    get_leap_prompt,
-    generate_markdown_output
-)
-from docling.document_converter import DocumentConverter
-from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import PdfPipelineOptions
-from docling.document_converter import PdfFormatOption
+# Load environment
 from dotenv import load_dotenv
-
 load_dotenv()
 
 app = FastAPI(title="TNFD LEAP Analysis API with Google Drive")
@@ -160,114 +149,21 @@ def upload_folder_to_drive(service, local_folder, parent_folder_id, folder_name)
     return folder, uploaded_files
 
 def process_pdf(pdf_path, pdf_name):
-    """Process a PDF file with LEAP categorization"""
+    """Process a PDF file - uses core function from main.py"""
 
     # Create temporary output folder
     temp_output = tempfile.mkdtemp()
-    images_folder = os.path.join(temp_output, f"{pdf_name}_images")
-    os.makedirs(images_folder, exist_ok=True)
 
-    # Configure Docling
-    pipeline_options = PdfPipelineOptions()
-    pipeline_options.do_ocr = False
-    pipeline_options.do_table_structure = True
-    pipeline_options.images_scale = 2.0
-    pipeline_options.generate_page_images = False
-    pipeline_options.generate_picture_images = True
+    # Use the core processing function from main.py
+    from main import process_pdf_to_markdown
 
-    converter = DocumentConverter(
-        format_options={
-            InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
-        }
-    )
-
-    result = converter.convert(pdf_path)
-    full_text = result.document.export_to_markdown()
-
-    # Extract images
-    image_counter = 0
-    if hasattr(result.document, 'pictures') and result.document.pictures:
-        for idx, picture in enumerate(result.document.pictures):
-            try:
-                image_counter += 1
-                image_filename = f"image_{image_counter:03d}.png"
-                image_path = os.path.join(images_folder, image_filename)
-
-                if hasattr(picture, 'get_image'):
-                    img = picture.get_image(result.document)
-                    if img:
-                        img.save(image_path)
-                elif hasattr(picture, 'image'):
-                    picture.image.save(image_path)
-            except Exception as e:
-                print(f"Warning: Could not extract image {image_counter}: {e}")
-                image_counter -= 1
-
-    # Detect language and process LEAP
-    detected_language = detect_language(full_text[:5000])
-    leap_keywords = get_leap_keywords(detected_language)
-    leap_prompt_config = get_leap_prompt(detected_language)
-
-    leap_content = {
-        "locate": [],
-        "evaluate": [],
-        "assess": [],
-        "prepare": []
-    }
-
-    lines = full_text.split('\n')
-    current_section = None
-    current_content = []
-    global_image_counter = 0
-
-    for line in lines:
-        if line.startswith('##') or line.startswith('#'):
-            if current_section and current_content:
-                content_text = '\n'.join(current_content)
-
-                while '<!-- image -->' in content_text and global_image_counter < image_counter:
-                    global_image_counter += 1
-                    image_filename = f"image_{global_image_counter:03d}.png"
-                    # Use just the image filename (no folder prefix) for n8n Google Drive compatibility
-                    image_path = image_filename
-                    img_tag = f'\n\n![Image {global_image_counter}]({image_path})\n\n'
-                    content_text = content_text.replace('<!-- image -->', img_tag, 1)
-
-                section_lower = current_section.lower()
-
-                if any(keyword.lower() in section_lower for keyword in leap_keywords['locate']):
-                    leap_content['locate'].append(f"### {current_section}\n\n{content_text}")
-                elif any(keyword.lower() in section_lower for keyword in leap_keywords['evaluate']):
-                    leap_content['evaluate'].append(f"### {current_section}\n\n{content_text}")
-                elif any(keyword.lower() in section_lower for keyword in leap_keywords['assess']):
-                    leap_content['assess'].append(f"### {current_section}\n\n{content_text}")
-                elif any(keyword.lower() in section_lower for keyword in leap_keywords['prepare']):
-                    leap_content['prepare'].append(f"### {current_section}\n\n{content_text}")
-
-            current_section = line.replace('#', '').strip()
-            current_content = []
-        else:
-            if line.strip():
-                current_content.append(line)
-
-    # Generate markdown
-    output_file = os.path.join(temp_output, f"{pdf_name}_leap.txt")
-    md_file = generate_markdown_output(
-        leap_content=leap_content,
-        leap_framework=leap_prompt_config['framework'],
-        full_text=full_text,
-        output_file=output_file,
-        images_folder=images_folder,
-        pdf_name=pdf_name,
-        language=detected_language
-    )
+    result = process_pdf_to_markdown(pdf_path, temp_output, pdf_name)
 
     return {
-        'markdown_file': md_file,
-        'text_file': output_file,
-        'images_folder': images_folder,
-        'image_count': image_counter,
-        'language': detected_language
+        'markdown_file': result['markdown_file'],
+        'images_folder': result['images_folder'],
+        'image_count': result['image_count'],
+        'language': 'en'  # Default for now
     }
 
 @app.get("/")
