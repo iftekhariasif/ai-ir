@@ -224,6 +224,184 @@
             border-color: #ff4b4b;
         }
 
+        .multi-company-section {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .multi-company-section.visible {
+            margin-top: 16px;
+            margin-bottom: 16px;
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        .display-mode-selector {
+            margin-top: 12px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .display-mode-selector.visible {
+            max-height: 100px;
+            opacity: 1;
+        }
+
+        .display-mode-selector label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #262730;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .display-mode-selector select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e6e9ef;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23808495' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .display-mode-selector select:focus {
+            outline: none;
+            border-color: #ff4b4b;
+        }
+
+        /* Custom Multi-Select Dropdown */
+        .custom-multiselect {
+            position: relative;
+            display: none;
+        }
+
+        .custom-multiselect.active {
+            display: block;
+        }
+
+        .multiselect-trigger {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e6e9ef;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s;
+        }
+
+        .multiselect-trigger:hover {
+            border-color: #ff4b4b;
+        }
+
+        .multiselect-trigger.open {
+            border-color: #ff4b4b;
+        }
+
+        .multiselect-trigger-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #262730;
+        }
+
+        .multiselect-trigger-text.placeholder {
+            color: #808495;
+        }
+
+        .multiselect-arrow {
+            margin-left: 8px;
+            color: #808495;
+            transition: transform 0.2s;
+        }
+
+        .multiselect-trigger.open .multiselect-arrow {
+            transform: rotate(180deg);
+        }
+
+        .multiselect-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e6e9ef;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .multiselect-dropdown.open {
+            display: block;
+        }
+
+        .multiselect-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.15s;
+        }
+
+        .multiselect-option:hover {
+            background: #f0f2f6;
+        }
+
+        .multiselect-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e6e9ef;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .multiselect-option.selected .multiselect-checkbox {
+            background: #ff4b4b;
+            border-color: #ff4b4b;
+        }
+
+        .multiselect-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .multiselect-option.selected .multiselect-checkbox::after {
+            display: block;
+        }
+
+        .multiselect-option-text {
+            flex: 1;
+            font-size: 14px;
+            color: #262730;
+        }
+
         .toggle-container {
             display: flex;
             align-items: center;
@@ -451,6 +629,62 @@
             background: #f0f2f6;
         }
 
+        /* Multi-Company Layout */
+        .multi-company-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 20px;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        .multi-company-container.compact {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .company-row {
+            display: flex;
+            gap: 20px;
+            border: 2px solid #e6e9ef;
+            border-radius: 8px;
+            background: white;
+            padding: 15px;
+            min-height: 600px;
+        }
+
+        .multi-company-container.compact .company-row {
+            min-height: 500px;
+        }
+
+        .company-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            border: 1px solid #e6e9ef;
+        }
+
+        .company-panel-header {
+            background: #f0f2f6;
+            color: #262730;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 1px solid #e6e9ef;
+        }
+
+        .company-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: white;
+        }
+
         #pdf-container {
             display: flex;
             flex-direction: column;
@@ -607,6 +841,19 @@
                     <select id="mdPath">
                         <option value="">Loading markdown files...</option>
                     </select>
+
+                    <!-- Custom Multi-Select Dropdown -->
+                    <div class="custom-multiselect" id="customMultiselect">
+                        <div class="multiselect-trigger" id="multiselectTrigger">
+                            <span class="multiselect-trigger-text placeholder" id="multiselectTriggerText">
+                                SELECT COMPANIES
+                            </span>
+                            <span class="multiselect-arrow">▼</span>
+                        </div>
+                        <div class="multiselect-dropdown" id="multiselectDropdown">
+                            <!-- Options will be populated dynamically -->
+                        </div>
+                    </div>
                 </div>
                 <div class="toggle-section">
                     <label class="toggle-label">ACTIVATE LEAP MODE</label>
@@ -629,6 +876,26 @@
                     </select>
                 </div>
 
+                <div class="multi-company-section" id="multiCompanySection">
+                    <div class="toggle-section">
+                        <label class="toggle-label">MULTI-COMPANY MODE</label>
+                        <div class="toggle-container">
+                            <div class="toggle-switch" id="multiCompanyToggleSwitch" onclick="toggleMultiCompany()">
+                                <div class="toggle-slider"></div>
+                            </div>
+                            <span class="toggle-text" id="multiCompanyToggleText">OFF</span>
+                        </div>
+                    </div>
+
+                    <div class="display-mode-selector" id="displayModeSelector">
+                        <label>DISPLAY MODE</label>
+                        <select id="displayMode" onchange="changeDisplayMode()">
+                            <option value="default">DEFAULT</option>
+                            <option value="compact">COMPACT</option>
+                        </select>
+                    </div>
+                </div>
+
                 <button class="action-btn" onclick="compareFiles()">
                     COMPARE
                 </button>
@@ -636,7 +903,7 @@
         </div>
 
         <div class="sidebar-footer">
-            <img src="/file?path=assets/aiESG_logo_01.png" alt="aiESG Logo" class="footer-logo">
+            <!-- <img src="/file?path=assets/aiESG_logo_01.png" alt="aiESG Logo" class="footer-logo"> -->
             <p>contact@aiesg.co.jp</p>
             <p>株式会社aiESG © All Right Reseved.</p>
         </div>
@@ -644,7 +911,8 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="container">
+        <!-- Single Company View -->
+        <div class="container" id="singleCompanyView">
             <div class="panel">
                 <div class="panel-header">PDF DOCUMENT</div>
                 <div class="panel-content" id="pdf-panel">
@@ -663,6 +931,11 @@
                 </div>
             </div>
         </div>
+
+        <!-- Multi-Company View -->
+        <div class="multi-company-container default" id="multiCompanyView" style="display: none;">
+            <!-- Companies will be dynamically added here -->
+        </div>
     </div>
 
     <script>
@@ -672,6 +945,9 @@
         // Global state
         let leapViewEnabled = false;  // Controls what files are shown in markdown dropdown
         let currentPdfName = null;
+        let multiCompanyMode = false;  // Controls multi-company comparison mode
+        let displayMode = 'default';  // 'default' or 'compact'
+        let selectedCompanies = [];  // Array of selected markdown file paths
 
         // Toggle Sidebar
         function toggleSidebar() {
@@ -708,15 +984,23 @@
             const toggleSwitch = document.getElementById('leapToggleSwitch');
             const toggleText = document.getElementById('leapToggleText');
             const leapPhaseSelector = document.getElementById('leapPhaseSelector');
+            const multiCompanySection = document.getElementById('multiCompanySection');
 
             if (leapViewEnabled) {
                 toggleSwitch.classList.add('active');
                 toggleText.textContent = 'ON';
                 leapPhaseSelector.classList.add('visible');
+                multiCompanySection.classList.add('visible');
             } else {
                 toggleSwitch.classList.remove('active');
                 toggleText.textContent = 'OFF';
                 leapPhaseSelector.classList.remove('visible');
+                multiCompanySection.classList.remove('visible');
+
+                // Turn off multi-company mode when LEAP mode is disabled
+                if (multiCompanyMode) {
+                    toggleMultiCompany();
+                }
             }
 
             // Reload current file with new display mode
@@ -730,7 +1014,299 @@
         function filterLeapPhase() {
             const mdSelect = document.getElementById('mdPath');
             if (mdSelect.value && leapViewEnabled) {
-                loadMarkdownFile(mdSelect.value);
+                if (multiCompanyMode) {
+                    loadMultiCompanyView();
+                } else {
+                    loadMarkdownFile(mdSelect.value);
+                }
+            }
+        }
+
+        // Toggle Multi-Company Mode
+        function toggleMultiCompany() {
+            multiCompanyMode = !multiCompanyMode;
+
+            const toggleSwitch = document.getElementById('multiCompanyToggleSwitch');
+            const toggleText = document.getElementById('multiCompanyToggleText');
+            const displayModeSelector = document.getElementById('displayModeSelector');
+            const mdSelect = document.getElementById('mdPath');
+            const customMultiselect = document.getElementById('customMultiselect');
+            const singleView = document.getElementById('singleCompanyView');
+            const multiView = document.getElementById('multiCompanyView');
+
+            if (multiCompanyMode) {
+                toggleSwitch.classList.add('active');
+                toggleText.textContent = 'ON';
+                displayModeSelector.classList.add('visible');
+
+                // Hide native select, show custom multiselect
+                mdSelect.style.display = 'none';
+                customMultiselect.classList.add('active');
+
+                // Populate custom dropdown with current options
+                populateCustomMultiselect();
+
+                // Switch views
+                singleView.style.display = 'none';
+                multiView.style.display = 'flex';
+
+                // Show instruction message
+                multiView.innerHTML = '<div class="loading" style="padding: 40px; text-align: center; font-size: 16px;">Select a LEAP phase and multiple companies from the dropdown above, then click COMPARE</div>';
+            } else {
+                toggleSwitch.classList.remove('active');
+                toggleText.textContent = 'OFF';
+                displayModeSelector.classList.remove('visible');
+
+                // Show native select, hide custom multiselect
+                mdSelect.style.display = 'block';
+                customMultiselect.classList.remove('active');
+
+                // Clear selections
+                selectedCompanies = [];
+
+                // Switch views
+                singleView.style.display = 'flex';
+                multiView.style.display = 'none';
+
+                // Reload single company view
+                if (mdSelect.value) {
+                    loadMarkdownFile(mdSelect.value);
+                }
+            }
+        }
+
+        // Populate custom multiselect dropdown
+        function populateCustomMultiselect() {
+            const mdSelect = document.getElementById('mdPath');
+            const dropdown = document.getElementById('multiselectDropdown');
+
+            dropdown.innerHTML = '';
+
+            // Get all options from native select
+            const options = Array.from(mdSelect.options).filter(opt => opt.value !== '');
+
+            options.forEach(option => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'multiselect-option';
+                optionDiv.dataset.value = option.value;
+
+                optionDiv.innerHTML = `
+                    <div class="multiselect-checkbox"></div>
+                    <div class="multiselect-option-text">${option.textContent}</div>
+                `;
+
+                optionDiv.addEventListener('click', () => toggleMultiselectOption(option.value));
+
+                dropdown.appendChild(optionDiv);
+            });
+        }
+
+        // Toggle multiselect option
+        function toggleMultiselectOption(value) {
+            const index = selectedCompanies.indexOf(value);
+
+            if (index > -1) {
+                // Deselect
+                selectedCompanies.splice(index, 1);
+            } else {
+                // Select
+                selectedCompanies.push(value);
+            }
+
+            updateMultiselectUI();
+        }
+
+        // Update multiselect UI
+        function updateMultiselectUI() {
+            const dropdown = document.getElementById('multiselectDropdown');
+            const triggerText = document.getElementById('multiselectTriggerText');
+
+            // Update checkbox states
+            dropdown.querySelectorAll('.multiselect-option').forEach(option => {
+                if (selectedCompanies.includes(option.dataset.value)) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+
+            // Update trigger text
+            if (selectedCompanies.length === 0) {
+                triggerText.textContent = 'SELECT COMPANIES';
+                triggerText.classList.add('placeholder');
+            } else {
+                triggerText.textContent = `${selectedCompanies.length} ${selectedCompanies.length === 1 ? 'company' : 'companies'} selected`;
+                triggerText.classList.remove('placeholder');
+            }
+        }
+
+        // Toggle multiselect dropdown open/close
+        function toggleMultiselectDropdown() {
+            const trigger = document.getElementById('multiselectTrigger');
+            const dropdown = document.getElementById('multiselectDropdown');
+
+            trigger.classList.toggle('open');
+            dropdown.classList.toggle('open');
+        }
+
+        // Close multiselect dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const customMultiselect = document.getElementById('customMultiselect');
+            const trigger = document.getElementById('multiselectTrigger');
+            const dropdown = document.getElementById('multiselectDropdown');
+
+            if (!customMultiselect.contains(e.target) && dropdown.classList.contains('open')) {
+                trigger.classList.remove('open');
+                dropdown.classList.remove('open');
+            }
+        });
+
+        // Initialize multiselect trigger click handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const trigger = document.getElementById('multiselectTrigger');
+            trigger.addEventListener('click', toggleMultiselectDropdown);
+        });
+
+        // Change Display Mode (Default/Compact)
+        function changeDisplayMode() {
+            displayMode = document.getElementById('displayMode').value;
+            const multiView = document.getElementById('multiCompanyView');
+
+            if (displayMode === 'compact') {
+                multiView.classList.remove('default');
+                multiView.classList.add('compact');
+            } else {
+                multiView.classList.remove('compact');
+                multiView.classList.add('default');
+            }
+        }
+
+        // Load Multi-Company View
+        async function loadMultiCompanyView() {
+            const selectedPhase = document.getElementById('leapPhase').value;
+            const multiView = document.getElementById('multiCompanyView');
+
+            if (!selectedPhase) {
+                alert('Please select a LEAP phase');
+                return;
+            }
+
+            // selectedCompanies is already populated from custom dropdown
+            if (selectedCompanies.length === 0) {
+                multiView.innerHTML = '<div class="loading" style="padding: 40px; text-align: center; font-size: 16px;">Please select companies from the dropdown above</div>';
+                return;
+            }
+
+            // Clear existing content
+            multiView.innerHTML = '';
+
+            // Load each company
+            for (const markdownPath of selectedCompanies) {
+                await loadCompanyRow(markdownPath, selectedPhase, multiView);
+            }
+        }
+
+        // Load a single company row
+        async function loadCompanyRow(markdownPath, phase, container) {
+            const pdfName = extractPdfNameFromMarkdown(markdownPath);
+
+            // Create company row
+            const companyRow = document.createElement('div');
+            companyRow.className = 'company-row';
+
+            // PDF Panel
+            const pdfPanel = document.createElement('div');
+            pdfPanel.className = 'company-panel';
+            pdfPanel.innerHTML = `
+                <div class="company-panel-header">${pdfName} - PDF</div>
+                <div class="company-panel-content">
+                    <div class="pdf-container-multi"></div>
+                </div>
+            `;
+
+            // Markdown Panel
+            const mdPanel = document.createElement('div');
+            mdPanel.className = 'company-panel';
+            mdPanel.innerHTML = `
+                <div class="company-panel-header">${pdfName} - ${phase} Phase</div>
+                <div class="company-panel-content markdown-content-multi"></div>
+            `;
+
+            companyRow.appendChild(pdfPanel);
+            companyRow.appendChild(mdPanel);
+            container.appendChild(companyRow);
+
+            // Load PDF
+            const pdfPath = `input/${pdfName}.pdf`;
+            const pdfContainer = pdfPanel.querySelector('.pdf-container-multi');
+            await loadPdfInContainer(pdfPath, pdfContainer);
+
+            // Load LEAP Markdown
+            const leapPath = markdownPath.replace('_full_text.md', `_${phase}.md`);
+            const mdContainer = mdPanel.querySelector('.markdown-content-multi');
+            await loadMarkdownInContainer(leapPath, mdContainer);
+        }
+
+        // Load PDF in a specific container
+        async function loadPdfInContainer(pdfPath, container) {
+            try {
+                const response = await fetch(`/file?path=${encodeURIComponent(pdfPath)}`);
+                if (!response.ok) {
+                    container.innerHTML = '<div class="loading">PDF not found</div>';
+                    return;
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                container.innerHTML = '';
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 1.5 });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'pdf-page';
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+
+                    container.appendChild(canvas);
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="loading">Error loading PDF: ${error.message}</div>`;
+            }
+        }
+
+        // Load Markdown in a specific container
+        async function loadMarkdownInContainer(mdPath, container) {
+            try {
+                const response = await fetch(`/file?path=${encodeURIComponent(mdPath)}`);
+                if (!response.ok) {
+                    container.innerHTML = '<div class="loading">Markdown file not found</div>';
+                    return;
+                }
+
+                const markdown = await response.text();
+                const htmlContent = marked.parse(markdown);
+                container.innerHTML = htmlContent;
+
+                // Fix image paths
+                const images = container.querySelectorAll('img');
+                images.forEach(img => {
+                    let src = img.getAttribute('src');
+                    if (src && !src.startsWith('http') && !src.startsWith('/file')) {
+                        const basePath = mdPath.substring(0, mdPath.lastIndexOf('/'));
+                        img.setAttribute('src', '/file?path=' + encodeURIComponent(`${basePath}/${src}`));
+                    }
+                });
+            } catch (error) {
+                container.innerHTML = `<div class="loading">Error loading markdown: ${error.message}</div>`;
             }
         }
 
@@ -971,6 +1547,13 @@
 
         // Compare files function
         async function compareFiles() {
+            // Handle multi-company mode
+            if (multiCompanyMode) {
+                await loadMultiCompanyView();
+                return;
+            }
+
+            // Single company mode
             const pdfPath = document.getElementById('pdfPath').value.trim();
             const mdPath = document.getElementById('mdPath').value.trim();
 
