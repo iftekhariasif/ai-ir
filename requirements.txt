@@ -12,3 +12,7 @@ google-api-python-client==2.108.0
 google-generativeai
 flask==3.0.0
 flask-cors==4.0.0
+streamlit
+pydantic-ai
+supabase
+openai
